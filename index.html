@@ -2,53 +2,56 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>ACS Splitter PRO - Online Edition</title>
+    <title>OGame ACS Splitter - OGotcha Engine</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-[#0d1117] text-[#c9d1d9] font-sans p-4">
+<body class="bg-[#0b0e14] text-slate-200 font-sans p-4 md:p-10">
 
-<div class="max-w-5xl mx-auto">
-    <div class="flex justify-between items-center mb-10 border-b border-gray-800 pb-6">
-        <h1 class="text-3xl font-black italic text-white tracking-tighter">OGAME <span class="text-blue-500 underline">SPLITTER</span></h1>
-        <div class="flex bg-gray-900 p-1 rounded-md border border-gray-700">
-            <button onclick="setMode('equal')" id="mEq" class="px-4 py-2 text-xs font-bold rounded bg-blue-600 text-white">EQUO</button>
-            <button onclick="setMode('weight')" id="mWt" class="px-4 py-2 text-xs font-bold rounded text-gray-400 ml-1">PESO FLOTTA</button>
+<div class="max-w-6xl mx-auto">
+    <div class="flex justify-between items-center mb-8 border-b border-slate-800 pb-4">
+        <h1 class="text-3xl font-black italic text-white uppercase tracking-tighter">
+            ACS <span class="text-blue-500">SPLITTER</span> <span class="text-xs bg-blue-600 text-white px-2 py-1 rounded">OGOTCHA CORE</span>
+        </h1>
+        <div class="flex gap-2">
+            <button id="btnEqual" onclick="setSplitMode('equal')" class="px-4 py-2 text-xs font-bold rounded bg-blue-600 text-white shadow-lg">EQUO</button>
+            <button id="btnWeight" onclick="setSplitMode('weight')" class="px-4 py-2 text-xs font-bold rounded bg-slate-800 text-slate-400">PESO FLOTTA</button>
         </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div class="space-y-6">
-            <div class="bg-[#161b22] p-6 rounded-lg border border-[#30363d]">
-                <label class="block text-xs font-bold text-blue-400 uppercase mb-3">Report Battaglia (API o Testo)</label>
-                <textarea id="crInput" rows="6" class="w-full bg-[#0d1117] border border-[#30363d] p-3 rounded text-xs font-mono" placeholder="Incolla cr-it... o il testo del report"></textarea>
+        <div class="space-y-4">
+            <div class="bg-[#161b22] p-6 rounded-lg border border-slate-700">
+                <label class="block text-xs font-bold text-blue-400 mb-2 uppercase">Report di Battaglia (Testo Completo)</label>
+                <textarea id="crInput" rows="10" class="w-full bg-[#0d1117] border border-slate-800 p-3 rounded text-xs font-mono" placeholder="Incolla qui tutto il testo del report da OGame..."></textarea>
             </div>
 
-            <div class="bg-[#161b22] p-6 rounded-lg border border-[#30363d]">
-                <label class="block text-xs font-bold text-emerald-400 uppercase mb-3">Riciclate (API o Testo)</label>
-                <textarea id="rrInput" rows="6" class="w-full bg-[#0d1117] border border-[#30363d] p-3 rounded text-xs font-mono" placeholder="Incolla rr-it... o le riciclate"></textarea>
+            <div class="bg-[#161b22] p-6 rounded-lg border border-slate-700">
+                <label class="block text-xs font-bold text-emerald-400 mb-2 uppercase">Messaggi Riciclate (Testo)</label>
+                <textarea id="rrInput" rows="6" class="w-full bg-[#0d1117] border border-slate-800 p-3 rounded text-xs font-mono" placeholder="Incolla qui il testo dei messaggi di riciclo..."></textarea>
             </div>
 
-            <button onclick="process()" class="w-full bg-[#238636] hover:bg-[#2ea043] py-4 rounded-md font-bold text-white transition-all uppercase tracking-widest shadow-lg">
-                Genera Spartizione Live
+            <button onclick="calculateSplit()" class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded font-bold text-white transition-all uppercase shadow-xl">
+                Genera Logistica Live
             </button>
         </div>
 
-        <div id="results" class="hidden space-y-6">
+        <div id="resultsArea" class="hidden space-y-6">
             <div class="bg-[#161b22] p-6 rounded-lg border-l-4 border-blue-500 shadow-2xl">
-                <h3 class="text-xl font-bold text-white mb-4 italic">🚀 Logistica Trasporti</h3>
-                <div id="logs" class="space-y-2 font-mono text-sm"></div>
+                <h3 class="text-xl font-bold text-white mb-4 italic uppercase">🚀 Piano Trasporti</h3>
+                <div id="logisticLogs" class="space-y-3 font-mono text-sm"></div>
             </div>
 
-            <div class="bg-[#161b22] p-6 rounded-lg border border-[#30363d]">
+            <div class="bg-[#161b22] p-6 rounded-lg border border-slate-800">
                 <table class="w-full text-left text-xs">
                     <thead>
-                        <tr class="text-gray-500 border-b border-gray-800 uppercase">
-                            <th class="pb-2 text-blue-300">Player</th>
-                            <th class="pb-2 text-center">Peso</th>
-                            <th class="pb-2 text-right">Spettante</th>
+                        <tr class="text-slate-500 border-b border-slate-800 uppercase font-black">
+                            <th class="pb-3">Player</th>
+                            <th class="pb-3 text-center">Peso Flotta %</th>
+                            <th class="pb-3 text-center">Riciclato</th>
+                            <th class="pb-3 text-right">Spettante Totale</th>
                         </tr>
                     </thead>
-                    <tbody id="statTable"></tbody>
+                    <tbody id="statsTable"></tbody>
                 </table>
             </div>
         </div>
@@ -56,92 +59,106 @@
 </div>
 
 <script>
-    let mode = 'equal';
-    const proxy = "https://api.allorigins.win/raw?url=";
+    let splitMode = 'equal';
 
-    function setMode(m) {
-        mode = m;
-        document.getElementById('mEq').className = m === 'equal' ? 'px-4 py-2 text-xs font-bold rounded bg-blue-600 text-white' : 'px-4 py-2 text-xs font-bold rounded text-gray-400 ml-1';
-        document.getElementById('mWt').className = m === 'weight' ? 'px-4 py-2 text-xs font-bold rounded bg-blue-600 text-white ml-1' : 'px-4 py-2 text-xs font-bold rounded text-gray-400 ml-1';
+    function setSplitMode(m) {
+        splitMode = m;
+        document.getElementById('btnEqual').className = m === 'equal' ? 'px-4 py-2 text-xs font-bold rounded bg-blue-600 text-white' : 'px-4 py-2 text-xs font-bold rounded bg-slate-800 text-slate-400';
+        document.getElementById('btnWeight').className = m === 'weight' ? 'px-4 py-2 text-xs font-bold rounded bg-blue-600 text-white' : 'px-4 py-2 text-xs font-bold rounded bg-slate-800 text-slate-400';
     }
 
-    async function process() {
-        const cr = document.getElementById('crInput').value.trim();
-        const rr = document.getElementById('rrInput').value.trim();
-        
-        // Se è una chiave API, proviamo a scaricarla, altrimenti usiamo il parser testuale
-        let players = [];
-        if (cr.startsWith('cr-')) {
-            try {
-                players = await fetchFromAPI(cr, rr);
-            } catch(e) {
-                alert("Errore API (CORS). Il tool passerà alla lettura del testo.");
-                players = parseFromText(cr, rr);
-            }
-        } else {
-            players = parseFromText(cr, rr);
-        }
+    function calculateSplit() {
+        const crText = document.getElementById('crInput').value;
+        const rrText = document.getElementById('rrInput').value;
 
-        render(players);
-    }
+        if(!crText || !rrText) return alert("Incolla i testi di Battaglia e Riciclate!");
 
-    async function fetchFromAPI(crKey, rrKeys) {
-        // Logica fetch con proxy (simile a quella discussa)
-        // Se fallisce, lancia errore e attiva il parser testuale
-        throw new Error("Fallback to text"); 
-    }
+        let players = {};
 
-    function parseFromText(cr, rr) {
-        let pMap = {};
-        // Regex per estrarre NOMI REALI (Cerca parole prima di [coordinate])
+        // PARSING NOMI (Logica OGotcha)
+        // Estraiamo i nomi reali e cerchiamo di identificare il peso della flotta
         const nameRegex = /([a-zA-Z0-9_-]+)\s+\[\d+:\d+:\d+\]/g;
-        let m;
-        while ((m = nameRegex.exec(cr)) !== null) {
-            let name = m[1];
-            if (!pMap[name]) pMap[name] = { name: name, loss: 0, fleet: 100, rec: 0 };
+        let match;
+        while ((match = nameRegex.exec(crText)) !== null) {
+            let name = match[1];
+            if(!players[name]) players[name] = { name: name, loss: 0, fleetValue: 100, rec: 0 };
         }
 
-        // Cerca quanto ha riciclato chi (Pattern: "giocatore X ha riciclato Y")
-        const recRegex = /giocatore\s+([a-zA-Z0-9_-]+)\s+ha\s+riciclato\s+([\d.]+)/gi;
-        while ((m = recRegex.exec(rr)) !== null) {
-            let name = m[1];
-            let val = parseInt(m[2].replace(/\./g, ''));
-            if (pMap[name]) pMap[name].rec += val;
+        // Estrazione perdite e stima peso flotta dal testo
+        // Cerchiamo i blocchi di testo dove OGame scrive "Perdite attaccante: X"
+        const lossRegex = /Perdite\s+(?:attaccante|difensore):\s*([\d.]+)/gi;
+        let lossMatches = [];
+        while ((match = lossRegex.exec(crText)) !== null) {
+            lossMatches.push(parseInt(match[1].replace(/\./g, '')));
+        }
+        
+        // Distribuiamo le perdite e il peso (basandoci su una stima se il testo è parziale)
+        Object.keys(players).forEach((name, i) => {
+            players[name].loss = lossMatches[i] || 0;
+            // Se non abbiamo l'API, usiamo un peso flotta basato sulle perdite + valore fisso
+            players[name].fleetValue = (players[name].loss * 5) + 1000000; 
+        });
+
+        // PARSING RICICLATE
+        const recRegex = /(?:giocatore|da)\s+([a-zA-Z0-9_-]+)\s+ha\s+riciclato\s+([\d.]+)/gi;
+        while ((match = recRegex.exec(rrText)) !== null) {
+            let name = match[1];
+            let val = parseInt(match[2].replace(/\./g, ''));
+            if(players[name]) players[name].rec += val;
         }
 
-        return Object.values(pMap);
+        renderResults(Object.values(players));
     }
 
-    function render(list) {
-        const logs = document.getElementById('logs');
-        const table = document.getElementById('statTable');
-        logs.innerHTML = ""; table.innerHTML = "";
+    function renderResults(list) {
+        const logs = document.getElementById('logisticLogs');
+        const stats = document.getElementById('statsTable');
+        logs.innerHTML = ""; stats.innerHTML = "";
 
-        // Logica di spartizione (Equa vs Peso)
         const totalRec = list.reduce((a, b) => a + b.rec, 0);
-        const profit = totalRec; // Semplificato per l'esempio
+        const totalLoss = list.reduce((a, b) => a + b.loss, 0);
+        const totalFleetValue = list.reduce((a, b) => a + b.fleetValue, 0);
+        const profit = totalRec - totalLoss;
+
+        let balances = [];
 
         list.forEach(p => {
-            let target = profit / list.length;
-            let bal = p.rec - target;
+            let profitShare = (splitMode === 'equal') ? 
+                (profit / list.length) : 
+                (p.fleetValue / totalFleetValue) * profit;
 
-            table.innerHTML += `
-                <tr class="border-b border-gray-800">
-                    <td class="py-4 font-bold text-blue-400 uppercase">${p.name}</td>
-                    <td class="text-center text-gray-500">${Math.round(100/list.length)}%</td>
+            let target = p.loss + profitShare;
+            let diff = p.rec - target;
+
+            stats.innerHTML += `
+                <tr class="border-b border-slate-800">
+                    <td class="py-4 font-black text-blue-400 uppercase tracking-tighter">${p.name}</td>
+                    <td class="text-center text-slate-500">${Math.round((p.fleetValue/totalFleetValue)*100)}%</td>
+                    <td class="text-center text-emerald-500 font-mono">${p.rec.toLocaleString()}</td>
                     <td class="text-right font-black text-white">${Math.floor(target).toLocaleString()}</td>
                 </tr>`;
             
-            if (bal > 1000) {
-                // Genera log di trasporto
-                list.forEach(other => {
-                    if (other.name !== p.name) {
-                        logs.innerHTML += `<div class="p-2 bg-gray-900 border-l-2 border-blue-500">🚚 <b>${p.name}</b> 👉 <b>${other.name}</b>: ${Math.floor(bal/(list.length-1)).toLocaleString()}</div>`;
-                    }
-                });
-            }
+            balances.push({name: p.name, diff: diff});
         });
-        document.getElementById('results').classList.remove('hidden');
+
+        // Generazione trasporti
+        let d = balances.filter(x => x.diff > 1000).sort((a,b) => b.diff - a.diff);
+        let c = balances.filter(x => x.diff < -1000).sort((a,b) => a.diff - b.diff);
+
+        d.forEach(deb => {
+            c.forEach(cred => {
+                if(deb.diff > 1000 && cred.diff < -1000) {
+                    let move = Math.min(deb.diff, Math.abs(cred.diff));
+                    logs.innerHTML += `
+                        <div class="p-3 bg-slate-900 border-l-2 border-blue-500 rounded">
+                            🚚 <b>${deb.name}</b> manda a <b>${cred.name}</b>: <span class="text-blue-400 font-bold">${Math.floor(move).toLocaleString()}</span>
+                        </div>`;
+                    deb.diff -= move; cred.diff += move;
+                }
+            });
+        });
+
+        document.getElementById('resultsArea').classList.remove('hidden');
     }
 </script>
 </body>
