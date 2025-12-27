@@ -2,59 +2,59 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>ACS SPLITTER - OGotcha Engine v6</title>
+    <title>OGame ACS Splitter - API Official</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-[#0b0e14] text-slate-200 font-sans p-4 md:p-10">
+<body class="bg-[#0b0e14] text-slate-200 font-sans p-6 md:p-12">
 
-<div class="max-w-6xl mx-auto">
-    <div class="flex justify-between items-center mb-8 border-b border-slate-800 pb-4">
-        <h1 class="text-3xl font-black italic text-blue-500 uppercase tracking-tighter">
-            ACS <span class="text-white">SPLITTER</span> <span class="text-[10px] bg-blue-600 text-white px-2 py-1 rounded ml-2 uppercase">API Live Mode</span>
-        </h1>
-        <div class="flex gap-2 bg-slate-900 p-1 rounded-lg">
-            <button id="btnEqual" onclick="setSplitMode('equal')" class="px-4 py-2 text-xs font-bold rounded bg-blue-600 text-white shadow-lg">EQUO</button>
-            <button id="btnWeight" onclick="setSplitMode('weight')" class="px-4 py-2 text-xs font-bold rounded text-slate-500">PESO FLOTTA</button>
+<div class="max-w-5xl mx-auto">
+    <header class="flex justify-between items-center mb-10 border-b border-slate-800 pb-6">
+        <div>
+            <h1 class="text-3xl font-black text-white italic uppercase tracking-tighter">ACS <span class="text-blue-500">SPLITTER</span></h1>
+            <p class="text-xs text-slate-500 uppercase tracking-widest font-bold">Powered by Gameforge API Standard</p>
         </div>
-    </div>
+        <div class="flex bg-slate-900 p-1 rounded-lg border border-slate-800">
+            <button id="btnEqual" onclick="setSplitMode('equal')" class="px-4 py-2 text-[10px] font-bold rounded bg-blue-600 text-white transition-all">DIVISIONE EQUA</button>
+            <button id="btnWeight" onclick="setSplitMode('weight')" class="px-4 py-2 text-[10px] font-bold rounded text-slate-500 hover:text-white transition-all">PESO FLOTTA</button>
+        </div>
+    </header>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div class="space-y-4">
-            <div class="bg-[#161b22] p-6 rounded-lg border border-slate-700 shadow-xl">
-                <label class="block text-xs font-bold text-blue-400 mb-2 uppercase tracking-widest">1. API Combat Report (CR)</label>
-                <input type="text" id="crApi" class="w-full bg-[#0d1117] border border-slate-800 p-3 rounded text-xs font-mono mb-4 text-blue-300" placeholder="cr-it-XXX-...">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <div class="space-y-6">
+            <div class="bg-[#161b22] p-6 rounded-2xl border border-slate-700 shadow-2xl">
+                <label class="block text-[10px] font-black text-blue-400 uppercase mb-4 tracking-widest">1. API Combat Report (CR)</label>
+                <input type="text" id="crApi" class="w-full bg-[#0d1117] border border-slate-800 p-4 rounded-xl text-sm font-mono text-blue-300 focus:border-blue-500 outline-none transition-all" placeholder="cr-it-XXX-...">
                 
-                <label class="block text-xs font-bold text-emerald-400 mb-2 uppercase tracking-widest">2. API Riciclate (RR) - Una per riga</label>
-                <textarea id="rrApis" rows="5" class="w-full bg-[#0d1117] border border-slate-800 p-3 rounded text-xs font-mono text-emerald-300" placeholder="rr-it-XXX-..."></textarea>
+                <label class="block text-[10px] font-black text-emerald-400 uppercase mt-6 mb-4 tracking-widest">2. API Riciclate (RR) - Una per riga</label>
+                <textarea id="rrApis" rows="5" class="w-full bg-[#0d1117] border border-slate-800 p-4 rounded-xl text-sm font-mono text-emerald-300 focus:border-emerald-500 outline-none transition-all" placeholder="rr-it-XXX-..."></textarea>
             </div>
 
-            <button onclick="fetchAllData()" id="mainBtn" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 py-4 rounded-xl font-black text-lg text-white transition-all uppercase shadow-2xl hover:scale-[1.01]">
-                Analizza API e Calcola
+            <button onclick="startAnalysis()" id="mainBtn" class="w-full bg-gradient-to-br from-blue-600 to-blue-800 py-5 rounded-2xl font-black text-white uppercase shadow-xl hover:shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all">
+                Estrai Nomi e Calcola
             </button>
-            
-            <div class="text-[10px] text-slate-500 italic bg-slate-800/30 p-2 rounded">
-                * Se l'API dà errore, assicurati di aver copiato la chiave correttamente o incolla il testo del report nel box sopra.
-            </div>
         </div>
 
         <div id="resultsArea" class="hidden space-y-6">
-            <div class="bg-[#161b22] p-6 rounded-lg border-l-4 border-emerald-500 shadow-2xl">
-                <h3 class="text-xl font-bold text-white mb-4 italic uppercase">📦 Logistica Trasporti</h3>
+            <div class="bg-[#161b22] p-6 rounded-2xl border-l-4 border-blue-500 shadow-2xl animate-fade-in">
+                <h3 class="text-xl font-bold text-white mb-6 italic flex justify-between items-center uppercase tracking-tighter">
+                    📦 Piano Logistico
+                    <span class="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-1 rounded not-italic tracking-normal">Ottimizzato</span>
+                </h3>
                 <div id="logisticLogs" class="space-y-3 font-mono text-sm"></div>
             </div>
 
-            <div class="bg-[#161b22] p-6 rounded-lg border border-slate-800">
+            <div class="bg-[#161b22] p-6 rounded-2xl border border-slate-800">
                 <table class="w-full text-left text-[11px]">
                     <thead>
-                        <tr class="text-slate-500 border-b border-slate-800 uppercase font-black">
-                            <th class="pb-3">Player</th>
-                            <th class="pb-3 text-center">Peso %</th>
-                            <th class="pb-3 text-center">Perdite</th>
-                            <th class="pb-3 text-center">Riciclato</th>
-                            <th class="pb-3 text-right text-blue-400">Target</th>
+                        <tr class="text-slate-500 border-b border-slate-800 font-black uppercase">
+                            <th class="pb-4">Giocatore</th>
+                            <th class="pb-4 text-center">Peso %</th>
+                            <th class="pb-4 text-center">Perdite</th>
+                            <th class="pb-4 text-center">Riciclato</th>
+                            <th class="pb-4 text-right text-blue-400">Target</th>
                         </tr>
                     </thead>
-                    <tbody id="statsTable"></tbody>
+                    <tbody id="statsTable" class="divide-y divide-slate-800"></tbody>
                 </table>
             </div>
         </div>
@@ -63,78 +63,77 @@
 
 <script>
     let splitMode = 'equal';
-    // Usiamo il proxy più potente disponibile per bypassare i blocchi di OGame
-    const proxy = "https://api.allorigins.win/raw?url=";
+    // Utilizzo di un proxy CORS dedicato alla lettura delle API XML/JSON
+    const proxyBase = "https://api.allorigins.win/raw?url=";
 
     function setSplitMode(m) {
         splitMode = m;
-        document.getElementById('btnEqual').className = m === 'equal' ? 'px-4 py-2 text-xs font-bold rounded bg-blue-600 text-white shadow-lg' : 'px-4 py-2 text-xs font-bold rounded text-slate-500';
-        document.getElementById('btnWeight').className = m === 'weight' ? 'px-4 py-2 text-xs font-bold rounded bg-blue-600 text-white shadow-lg' : 'px-4 py-2 text-xs font-bold rounded text-slate-500';
+        document.getElementById('btnEqual').className = m === 'equal' ? 'px-4 py-2 text-[10px] font-bold rounded bg-blue-600 text-white shadow-lg' : 'px-4 py-2 text-[10px] font-bold rounded text-slate-500';
+        document.getElementById('btnWeight').className = m === 'weight' ? 'px-4 py-2 text-[10px] font-bold rounded bg-blue-600 text-white shadow-lg' : 'px-4 py-2 text-[10px] font-bold rounded text-slate-500';
     }
 
-    async function fetchOGameAPI(key) {
-        const parts = key.split('-');
-        if (parts.length < 4) throw new Error("API Key non valida");
-        const type = parts[0] === 'cr' ? 'combat' : 'recycler';
-        // Costruiamo l'URL ufficiale delle API OGame
-        const apiUrl = `https://api.gameforge.com/${parts[1]}/${parts[2]}/api/${type}/report?hash=${parts[3]}`;
+    async function fetchOGame(key) {
+        const p = key.trim().split('-');
+        if (p.length < 4) throw new Error("Key Incompleta");
+        const type = p[0] === 'cr' ? 'combat' : 'recycler';
+        const officialUrl = `https://api.gameforge.com/${p[1]}/${p[2]}/api/${type}/report?hash=${p[3]}`;
         
-        const response = await fetch(proxy + encodeURIComponent(apiUrl));
-        if (!response.ok) throw new Error("Errore Network");
+        const response = await fetch(proxyBase + encodeURIComponent(officialUrl));
+        if (!response.ok) throw new Error("Server OGame non raggiungibile");
         return await response.json();
     }
 
-    async function fetchAllData() {
-        const crKey = document.getElementById('crApi').value.trim();
+    async function startAnalysis() {
+        const crKey = document.getElementById('crApi').value;
         const rrKeys = document.getElementById('rrApis').value.split('\n').filter(k => k.trim());
         const btn = document.getElementById('mainBtn');
 
-        if (!crKey) return alert("Inserisci la CR Key!");
+        if (!crKey.startsWith('cr-')) return alert("Inserisci una Combat Report Key valida!");
 
         btn.disabled = true;
-        btn.innerText = "Interrogazione Server OGame...";
+        btn.innerText = "Interrogazione API Origin...";
 
         try {
-            // 1. Scarichiamo il Report di Battaglia
-            const crData = await fetchOGameAPI(crKey);
-            
-            // 2. Scarichiamo tutte le Riciclate
-            const rrDatas = await Promise.all(rrKeys.map(k => fetchOGameAPI(k.trim())));
+            const crData = await fetchOGame(crKey);
+            const rrDatas = await Promise.all(rrKeys.map(k => fetchOGame(k)));
 
             let players = {};
-            let totalValue = 0;
+            let totalFleetValue = 0;
 
-            // Elaborazione Attaccanti (Nomi Reali dall'API)
+            // Lettura nomi reali e flotte da API
             crData.attacker.forEach(a => {
-                const val = (a.fleetMet || 0) + (a.fleetCry || 0);
-                players[a.name] = { name: a.name, loss: (a.lossMet || 0) + (a.lossCry || 0), fleet: val, rec: 0 };
-                totalValue += val;
+                const value = (a.fleetMet || 0) + (a.fleetCry || 0);
+                players[a.name] = { 
+                    name: a.name, 
+                    loss: (a.lossMet || 0) + (a.lossCry || 0), 
+                    fleet: value, 
+                    rec: 0 
+                };
+                totalFleetValue += value;
             });
 
-            // Elaborazione Riciclate (Mappa chi ha riciclato cosa)
+            // Mapping detriti reali riciclati
             rrDatas.forEach(rr => {
-                if (rr && rr.recycledBy) {
-                    if (players[rr.recycledBy]) {
-                        players[rr.recycledBy].rec += (rr.metal || 0) + (rr.crystal || 0);
-                    }
+                if (rr && rr.recycledBy && players[rr.recycledBy]) {
+                    players[rr.recycledBy].rec += (rr.metal || 0) + (rr.crystal || 0);
                 }
             });
 
-            render(Object.values(players), totalValue);
+            render(Object.values(players), totalFleetValue);
 
         } catch (e) {
             console.error(e);
-            alert("Errore API: Gameforge blocca la connessione. Prova a ricaricare la pagina o controlla che le chiavi siano corrette.");
+            alert("Errore API: Gameforge sta bloccando la richiesta CORS. Usa il testo del report se l'API non risponde.");
         } finally {
             btn.disabled = false;
-            btn.innerText = "Analizza API e Calcola";
+            btn.innerText = "Estrai Nomi e Calcola";
         }
     }
 
     function render(list, totalV) {
         const logs = document.getElementById('logisticLogs');
-        const table = document.getElementById('statsTable');
-        logs.innerHTML = ""; table.innerHTML = "";
+        const stats = document.getElementById('statsTable');
+        logs.innerHTML = ""; stats.innerHTML = "";
 
         const totalRec = list.reduce((a, b) => a + b.rec, 0);
         const totalLoss = list.reduce((a, b) => a + b.loss, 0);
@@ -147,19 +146,19 @@
             let target = p.loss + share;
             let diff = p.rec - target;
 
-            table.innerHTML += `
-                <tr class="border-b border-slate-800">
-                    <td class="py-4 font-bold text-blue-400 uppercase tracking-tighter">${p.name}</td>
+            stats.innerHTML += `
+                <tr class="hover:bg-white/5 transition-colors">
+                    <td class="py-4 font-bold text-blue-400 uppercase">${p.name}</td>
                     <td class="text-center text-slate-500">${totalV > 0 ? Math.round((p.fleet/totalV)*100) : 0}%</td>
-                    <td class="text-center text-red-500">${p.loss.toLocaleString()}</td>
-                    <td class="text-center text-emerald-500 font-mono">${p.rec.toLocaleString()}</td>
+                    <td class="text-center text-red-400/80">${p.loss.toLocaleString()}</td>
+                    <td class="text-center text-emerald-400 font-mono">${p.rec.toLocaleString()}</td>
                     <td class="text-right font-black text-white">${Math.floor(target).toLocaleString()}</td>
                 </tr>`;
             
             balances.push({name: p.name, diff: diff});
         });
 
-        // Calcolo Logistica ottimizzato (Chi dà a chi)
+        // Generazione trasporti
         let d = balances.filter(x => x.diff > 1000).sort((a,b) => b.diff - a.diff);
         let c = balances.filter(x => x.diff < -1000).sort((a,b) => a.diff - b.diff);
 
@@ -167,7 +166,11 @@
             c.forEach(cred => {
                 if(deb.diff > 1000 && cred.diff < -1000) {
                     let move = Math.min(deb.diff, Math.abs(cred.diff));
-                    logs.innerHTML += `<div class="p-2 bg-slate-900 border-l-2 border-blue-500">🚚 <b>${deb.name}</b> 👉 <b>${cred.name}</b>: <span class="text-emerald-400 font-bold">${Math.floor(move).toLocaleString()}</span></div>`;
+                    logs.innerHTML += `
+                        <div class="p-3 bg-slate-900 border-l-2 border-blue-500 rounded flex justify-between items-center">
+                            <span>🚚 <b>${deb.name}</b> 👉 <b>${cred.name}</b></span>
+                            <span class="text-blue-400 font-bold tracking-tighter">${Math.floor(move).toLocaleString()}</span>
+                        </div>`;
                     deb.diff -= move; cred.diff += move;
                 }
             });
@@ -178,3 +181,5 @@
 </script>
 </body>
 </html>
+</html>
+
